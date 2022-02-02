@@ -2,7 +2,7 @@ class GameBoard {
     private val startPositionWhite = 2
     private val startPositionBlack = 7
     private var firstPlayersName: Player? = null
-    private var secondPlayersName: Player? = null
+    private var secondPlayerName: Player? = null
     private var actualTurnsPlayer: Player? = null
     private val chessBoard =
         MutableList(8) { MutableList(8) { Elements.EMPTY.view } }
@@ -21,12 +21,12 @@ class GameBoard {
         println("First Player's name:")
         firstPlayersName = Player(readLine()!!)
         println("Second Player's name:")
-        secondPlayersName = Player(readLine()!!)
+        secondPlayerName = Player(readLine()!!)
         actualTurnsPlayer = firstPlayersName
     }
 
-    private fun switcher() {
-        actualTurnsPlayer = if (actualTurnsPlayer == firstPlayersName) secondPlayersName else firstPlayersName
+    private fun switchPlayer() {
+        actualTurnsPlayer = if (actualTurnsPlayer == firstPlayersName) secondPlayerName else firstPlayersName
     }
 
     private fun inputUsersText() {
@@ -46,7 +46,7 @@ class GameBoard {
                 }
 
             }
-            Coordinate.build(inputText).also { inputCoordinates = it }
+            inputCoordinates = Coordinate.build(inputText)
 
             when {
                 convertingCharsCoordinateToInt(inputCoordinates.firstLine) - convertingCharsCoordinateToInt(
@@ -116,7 +116,7 @@ class GameBoard {
                         turnsHistory()
                         printChessboard()
                         stalemate()
-                        switcher()
+                        switchPlayer()
 
                         return true
                     } else
@@ -138,7 +138,7 @@ class GameBoard {
                         chessBoard[inputCoordinates.secondPosition - 1][convertingCharsCoordinateToInt(inputCoordinates.firstLine)] =
                             Elements.WHITE.view
                         turnsHistory()
-                        switcher()
+                        switchPlayer()
                         printChessboard()
                         stalemate()
 
@@ -149,7 +149,7 @@ class GameBoard {
                     return false
                 }
             }
-            secondPlayersName -> {
+            secondPlayerName -> {
                 if (chessBoard[inputCoordinates.firstPosition - 1][convertingCharsCoordinateToInt(inputCoordinates.firstLine)] != Elements.BLACK.view) {
                     println("No black pawn at ${inputCoordinates.firstLine}${inputCoordinates.firstPosition}")
                     return false
@@ -173,7 +173,7 @@ class GameBoard {
                         chessBoard[inputCoordinates.secondPosition - 1][convertingCharsCoordinateToInt(inputCoordinates.firstLine)] =
                             Elements.BLACK.view
                         turnsHistory()
-                        switcher()
+                        switchPlayer()
                         printChessboard()
                         stalemate()
                         return true
@@ -181,10 +181,10 @@ class GameBoard {
                         println("Invalid input")
                     return false
 
-                } else if (actualTurnsPlayer == secondPlayersName && inputCoordinates.firstPosition - inputCoordinates.secondPosition != 1) {
+                } else if (actualTurnsPlayer == secondPlayerName && inputCoordinates.firstPosition - inputCoordinates.secondPosition != 1) {
                     println("Invalid input")
                     return false
-                } else if (actualTurnsPlayer == secondPlayersName && inputCoordinates.secondPosition >= inputCoordinates.firstPosition) {
+                } else if (actualTurnsPlayer == secondPlayerName && inputCoordinates.secondPosition >= inputCoordinates.firstPosition) {
                     println("Invalid input")
                     return false
                 } else
@@ -196,7 +196,7 @@ class GameBoard {
                         chessBoard[inputCoordinates.secondPosition - 1][convertingCharsCoordinateToInt(inputCoordinates.firstLine)] =
                             Elements.BLACK.view
                         turnsHistory()
-                        switcher()
+                        switchPlayer()
                         printChessboard()
                         stalemate()
                         return true
@@ -244,11 +244,11 @@ class GameBoard {
                     printChessboard()
                     stalemate()
                     winConditionToTakingAllPawns()
-                    switcher()
+                    switchPlayer()
                     return true
                 }
             }
-            secondPlayersName -> {
+            secondPlayerName -> {
                 if (chessBoard[inputCoordinates.secondPosition - 1][convertingCharsCoordinateToInt(inputCoordinates.secondLine)] ==
                     Elements.WHITE.view
                 ) {
@@ -262,7 +262,7 @@ class GameBoard {
                     printChessboard()
                     stalemate()
                     winConditionToTakingAllPawns()
-                    switcher()
+                    switchPlayer()
                     return true
                 }
             }
@@ -295,10 +295,7 @@ class GameBoard {
     }
 
     // возвращает координаты предыдущего кода
-    private fun lastTurn(): String {
-        return if (saveTurns.size < 2) saveTurns[0] else saveTurns[count - 1]
-
-    }
+    private fun lastTurn(): String = if (saveTurns.size < 2) saveTurns[0] else saveTurns[count - 1]
 
     // метод для взятия пешки на проходе - срабатывает если игрок делает первый ход со старт.позиции, а соперник находятся в позиции потенциально, бьющей пешку, через которую та перепрыгнула
     private fun takePawnOnPassant(): Boolean {
@@ -325,11 +322,11 @@ class GameBoard {
                     printChessboard()
                     stalemate()
                     winConditionToTakingAllPawns()
-                    switcher()
+                    switchPlayer()
                     return true
                 }
             }
-            secondPlayersName -> {
+            secondPlayerName -> {
                 if ((secondCoordinateLastTurn - firstCoordinateLastTurn == 2)
                     && (inputCoordinates.firstPosition == secondCoordinateLastTurn && (inputCoordinates.firstLine == secondLineLastTurn + 1 ||
                             inputCoordinates.firstLine == secondLineLastTurn - 1))
@@ -344,7 +341,7 @@ class GameBoard {
                     printChessboard()
                     stalemate()
                     winConditionToTakingAllPawns()
-                    switcher()
+                    switchPlayer()
                     return true
                 }
             }
@@ -363,7 +360,7 @@ class GameBoard {
                     return true
                 }
             }
-            secondPlayersName -> {
+            secondPlayerName -> {
                 if (!chessBoard.flatten().contains(Elements.WHITE.view)) {
                     println("Black Wins!")
                     println("Bye!")
@@ -390,7 +387,7 @@ class GameBoard {
                     return true
                 }
             }
-            secondPlayersName -> {
+            secondPlayerName -> {
                 if (inputCoordinates.secondPosition == 1) {
                     chessBoard[inputCoordinates.secondPosition - 1][convertingCharsCoordinateToInt(inputCoordinates.secondLine)] =
                         Elements.BLACK.view
@@ -449,7 +446,7 @@ class GameBoard {
                     return true
                 }
             }
-            secondPlayersName -> {
+            secondPlayerName -> {
                 var countWhiteTruePawns = 0
 
                 for (i in 0..chessBoard.lastIndex) {
@@ -490,36 +487,5 @@ class GameBoard {
         return false
     }
 
-    // принимаем инпут, парсим
-    class Coordinate(
-        val firstLine: Char,
-        val secondLine: Char,
-        val firstPosition: Int,
-        val secondPosition: Int,
-        val required: String,
-    ) {
 
-        private constructor(builder: Builder) : this(
-            firstLine = builder.firstLine,
-            secondLine = builder.secondLine,
-            firstPosition = builder.firstPosition,
-            secondPosition = builder.secondPosition,
-            required = builder.required
-        )
-
-        companion object {
-            fun build(required: String) = Builder(required).build()
-        }
-
-        class Builder(
-            val required: String,
-        ) {
-            val firstLine: Char = required[0]
-            val secondLine: Char = required[2]
-            val firstPosition: Int = required[1].toString().toInt()
-            val secondPosition: Int = required[3].toString().toInt()
-
-            fun build() = Coordinate(this)
-        }
-    }
 }
